@@ -61,4 +61,8 @@ func (pengo *Pengo) Collide(collision tl.Physical) {
 		}
 	}
 
+	if _, ok := collision.(*Iceblock); ok {
+		pengo.r.SetPosition(pengo.px, pengo.py)
+	}
+
 }
