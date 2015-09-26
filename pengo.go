@@ -3,30 +3,36 @@ package main
 import tl "github.com/JoelOtter/termloop"
 
 type Pengo struct {
-	entity *tl.Entity
-	prevX  int
-	prevY  int
+	r         *tl.Rectangle
+	px        int
+	py        int
+	move      bool
+	g         *tl.Game
+	w         int // Width of maze
+	h         int // Hieght of maze
+	score     int
+	scoretext *tl.Text
 }
 
 func (pengo *Pengo) Draw(screen *tl.Screen) {
-	pengo.entity.Draw(screen)
+	pengo.r.Draw(screen)
 }
 
 func (pengo *Pengo) Tick(event tl.Event) {
 	if event.Type == tl.EventKey {
-		pengo.prevX, pengo.prevY = pengo.entity.Position()
+		pengo.px, pengo.py = pengo.r.Position()
 		switch event.Key {
 		case tl.KeyArrowRight:
-			pengo.entity.SetPosition(pengo.prevX+1, pengo.prevY)
+			pengo.r.SetPosition(pengo.px+1, pengo.py)
 			break
 		case tl.KeyArrowLeft:
-			pengo.entity.SetPosition(pengo.prevX-1, pengo.prevY)
+			pengo.r.SetPosition(pengo.px-1, pengo.py)
 			break
 		case tl.KeyArrowUp:
-			pengo.entity.SetPosition(pengo.prevX, pengo.prevY-1)
+			pengo.r.SetPosition(pengo.px, pengo.py-1)
 			break
 		case tl.KeyArrowDown:
-			pengo.entity.SetPosition(pengo.prevX, pengo.prevY+1)
+			pengo.r.SetPosition(pengo.px, pengo.py+1)
 			break
 
 		}
@@ -34,15 +40,25 @@ func (pengo *Pengo) Tick(event tl.Event) {
 }
 
 func (pengo *Pengo) Size() (int, int) {
-	return pengo.entity.Size()
+	return pengo.r.Size()
 }
 
 func (pengo *Pengo) Position() (int, int) {
-	return pengo.entity.Position()
+	return pengo.r.Position()
 }
 
 func (pengo *Pengo) Collide(collision tl.Physical) {
-	if _, ok := collision.(*tl.Rectangle); ok {
-		pengo.entity.SetPosition(pengo.prevX, pengo.prevY)
+	if rectangle, ok := collision.(*tl.Rectangle); ok {
+		if rectangle.Color() == tl.ColorBlue {
+			// Collision with walls
+			pengo.r.SetPosition(pengo.px, pengo.py)
+		} else if rectangle.Color() == tl.ColorWhite {
+			// Collision with end - new level!
+			//b.w += 1
+			//b.h += 1
+			//b.score += 1
+			//buildLevel(b.g, 13, 15, b.score)
+		}
 	}
+
 }
