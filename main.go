@@ -47,6 +47,9 @@ func main() {
 
 	game := tl.NewGame()
 	BuildLevel(game, 13, 15, 0)
+
+	game.SetDebugOn(true)
+
 	game.Start()
 
 }
