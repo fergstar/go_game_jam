@@ -3,6 +3,7 @@ package main
 import tl "github.com/JoelOtter/termloop"
 
 var direction Direction
+var collidedIceblock *Iceblock
 
 type Pengo struct {
 	r         *tl.Rectangle
@@ -41,8 +42,23 @@ func (pengo *Pengo) Tick(event tl.Event) {
 			pengo.r.SetPosition(pengo.px, pengo.py+1)
 			break
 		case tl.KeySpace:
-			// get pengos direction.
-			// if iceblock next to pengo direction
+
+			var posX, posY = collidedIceblock.r.Position()
+			switch direction {
+			case LEFT:
+				collidedIceblock.r.SetPosition(posX-1, posY)
+				break
+			case UP:
+				collidedIceblock.r.SetPosition(posX, posY-1)
+				break
+			case RIGHT:
+				collidedIceblock.r.SetPosition(posX+1, posY)
+				break
+			case DOWN:
+				collidedIceblock.r.SetPosition(posX, posY+1)
+				break
+			}
+
 			//  	if another iceblock next door
 			// 			destroy iceblock next to pengo
 			//  	else push iceblock in direction
@@ -51,8 +67,6 @@ func (pengo *Pengo) Tick(event tl.Event) {
 		}
 	}
 
-	pengo.g.SetDebugOn(true)
-	pengo.g.Log("Pengo is going " + direction.String())
 }
 
 func (pengo *Pengo) Size() (int, int) {
@@ -64,8 +78,10 @@ func (pengo *Pengo) Position() (int, int) {
 }
 
 func (pengo *Pengo) Collide(collision tl.Physical) {
-	if _, ok := collision.(*Iceblock); ok {
+	if iceblock, ok := collision.(*Iceblock); ok {
+		collidedIceblock = iceblock
 		pengo.r.SetPosition(pengo.px, pengo.py)
+
 	}
 
 }
