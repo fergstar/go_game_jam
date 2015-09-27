@@ -3,13 +3,15 @@ package main
 type Direction int
 
 const (
-	LEFT Direction = 1 + iota
+	NONE Direction = 1 + iota
+	LEFT
 	UP
 	RIGHT
 	DOWN
 )
 
 var directions = [...]string{
+	"NONE",
 	"LEFT",
 	"UP",
 	"RIGHT",

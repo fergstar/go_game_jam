@@ -16,7 +16,11 @@ func NewPengo(x, y int, color tl.Attr, g *tl.Game, w, h, score int, scoretext *t
 
 func NewIceBlock(x, y int, color tl.Attr) *Iceblock {
 	return &Iceblock{
-		r: tl.NewRectangle(x, y, 1, 1, color),
+		r:         tl.NewRectangle(x, y, 1, 1, color),
+		px:        x,
+		py:        y,
+		moving:    false,
+		direction: NONE,
 	}
 }
 

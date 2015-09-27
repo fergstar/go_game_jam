@@ -26,43 +26,31 @@ func (pengo *Pengo) Tick(event tl.Event) {
 		pengo.px, pengo.py = pengo.r.Position()
 		switch event.Key {
 		case tl.KeyArrowRight:
+			collidedIceblock = nil
 			direction = RIGHT
 			pengo.r.SetPosition(pengo.px+1, pengo.py)
 			break
 		case tl.KeyArrowLeft:
+			collidedIceblock = nil
 			direction = LEFT
 			pengo.r.SetPosition(pengo.px-1, pengo.py)
 			break
 		case tl.KeyArrowUp:
+			collidedIceblock = nil
 			direction = UP
 			pengo.r.SetPosition(pengo.px, pengo.py-1)
 			break
 		case tl.KeyArrowDown:
+			collidedIceblock = nil
 			direction = DOWN
 			pengo.r.SetPosition(pengo.px, pengo.py+1)
 			break
 		case tl.KeySpace:
-
-			var posX, posY = collidedIceblock.r.Position()
-			switch direction {
-			case LEFT:
-				collidedIceblock.r.SetPosition(posX-1, posY)
-				break
-			case UP:
-				collidedIceblock.r.SetPosition(posX, posY-1)
-				break
-			case RIGHT:
-				collidedIceblock.r.SetPosition(posX+1, posY)
-				break
-			case DOWN:
-				collidedIceblock.r.SetPosition(posX, posY+1)
-				break
+			if collidedIceblock != nil {
+				collidedIceblock.moving = true
+				collidedIceblock.direction = direction
+				collidedIceblock = nil
 			}
-
-			//  	if another iceblock next door
-			// 			destroy iceblock next to pengo
-			//  	else push iceblock in direction
-			// else do nothing
 			break
 		}
 	}
