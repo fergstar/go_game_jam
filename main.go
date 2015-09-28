@@ -2,25 +2,23 @@ package main
 
 import tl "github.com/JoelOtter/termloop"
 
-func NewPengo(x, y int, color tl.Attr, g *tl.Game, w, h, score int, scoretext *tl.Text) *Pengo {
+func NewPengo(x, y int, game *tl.Game) *Pengo {
 	return &Pengo{
-		r:         tl.NewRectangle(x, y, 1, 1, color),
-		g:         g,
-		w:         w,
-		h:         h,
-		score:     score,
-		scoretext: scoretext,
+		r: tl.NewRectangle(x, y, 1, 1, tl.ColorRed),
+		x: x,
+		y: y,
+		g: game,
+		d: 0,
 	}
-
 }
 
-func NewIceBlock(x, y int, color tl.Attr) *Iceblock {
+func NewIceBlock(x, y int, game *tl.Game, color tl.Attr) *Iceblock {
 	return &Iceblock{
-		r:         tl.NewRectangle(x, y, 1, 1, color),
-		px:        x,
-		py:        y,
-		moving:    false,
-		direction: NONE,
+		r:      tl.NewRectangle(x, y, 1, 1, color),
+		g:      game,
+		x:      x,
+		y:      y,
+		update: 0.05,
 	}
 }
 
@@ -36,13 +34,10 @@ func BuildLevel(g *tl.Game, w, h, score int) {
 	for i, row := range maze {
 		for j, path := range row {
 			if path == '*' {
-				l.AddEntity(NewIceBlock(i, j, tl.ColorBlue))
+				l.AddEntity(NewIceBlock(i, j, g, tl.ColorBlue))
 			} else if path == 'P' {
-				col := tl.RgbTo256Color(0xff, 0, 0)
-				l.AddEntity(NewPengo(i, j, col, g, w, h, 0, scoretext))
+				l.AddEntity(NewPengo(i, j, g))
 			} //else if path == 'L' {
-			//	l.AddEntity(tl.NewRectangle(i, j, 1, 1, tl.ColorBlue))
-			//}
 		}
 	}
 }

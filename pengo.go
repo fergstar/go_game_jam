@@ -2,74 +2,64 @@ package main
 
 import tl "github.com/JoelOtter/termloop"
 
-var direction Direction
-var collidedIceblock *Iceblock
-
 type Pengo struct {
-	r         *tl.Rectangle
-	px        int
-	py        int
-	move      bool
-	g         *tl.Game
-	w         int // Width of maze
-	h         int // Hieght of maze
-	score     int
-	scoretext *tl.Text
+	r  *tl.Rectangle
+	x  int
+	y  int
+	g  *tl.Game
+	d  Direction
+	ib *Iceblock
 }
 
 func (pengo *Pengo) Draw(screen *tl.Screen) {
 	pengo.r.Draw(screen)
 }
 
-func (pengo *Pengo) Tick(event tl.Event) {
+func (p *Pengo) Tick(event tl.Event) {
 	if event.Type == tl.EventKey {
-		pengo.px, pengo.py = pengo.r.Position()
+		p.x, p.y = p.r.Position()
 		switch event.Key {
 		case tl.KeyArrowRight:
-			collidedIceblock = nil
-			direction = RIGHT
-			pengo.r.SetPosition(pengo.px+1, pengo.py)
+			p.d = RIGHT
+			p.ib = nil
+			p.r.SetPosition(p.x+1, p.y)
 			break
 		case tl.KeyArrowLeft:
-			collidedIceblock = nil
-			direction = LEFT
-			pengo.r.SetPosition(pengo.px-1, pengo.py)
+			p.d = LEFT
+			p.ib = nil
+			p.r.SetPosition(p.x-1, p.y)
 			break
 		case tl.KeyArrowUp:
-			collidedIceblock = nil
-			direction = UP
-			pengo.r.SetPosition(pengo.px, pengo.py-1)
+			p.d = UP
+			p.ib = nil
+			p.r.SetPosition(p.x, p.y-1)
 			break
 		case tl.KeyArrowDown:
-			collidedIceblock = nil
-			direction = DOWN
-			pengo.r.SetPosition(pengo.px, pengo.py+1)
+			p.d = DOWN
+			p.ib = nil
+			p.r.SetPosition(p.x, p.y+1)
 			break
 		case tl.KeySpace:
-			if collidedIceblock != nil {
-				collidedIceblock.moving = true
-				collidedIceblock.direction = direction
-				collidedIceblock = nil
+			if p.ib != nil {
+				p.ib.direction = p.d
 			}
 			break
 		}
 	}
-
 }
 
-func (pengo *Pengo) Size() (int, int) {
-	return pengo.r.Size()
+func (p *Pengo) Size() (int, int) {
+	return p.r.Size()
 }
 
-func (pengo *Pengo) Position() (int, int) {
-	return pengo.r.Position()
+func (p *Pengo) Position() (int, int) {
+	return p.r.Position()
 }
 
-func (pengo *Pengo) Collide(collision tl.Physical) {
-	if iceblock, ok := collision.(*Iceblock); ok {
-		collidedIceblock = iceblock
-		pengo.r.SetPosition(pengo.px, pengo.py)
-
+func (p *Pengo) Collide(collision tl.Physical) {
+	if cib, ok := collision.(*Iceblock); ok {
+		p.g.Log("pengo collided with iceblock")
+		p.ib = cib
+		p.r.SetPosition(p.x, p.y)
 	}
-
 }

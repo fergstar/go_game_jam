@@ -4,51 +4,82 @@ import tl "github.com/JoelOtter/termloop"
 
 type Iceblock struct {
 	r         *tl.Rectangle
-	px        int
-	py        int
-	moving    bool
+	g         *tl.Game
+	x         int
+	y         int
+	update    float64
+	time      float64
 	direction Direction
 }
 
-func (iceblock *Iceblock) Draw(screen *tl.Screen) {
+func (i *Iceblock) Draw(s *tl.Screen) {
 
-	if iceblock.moving && iceblock.direction != NONE {
-		switch iceblock.direction {
-		case RIGHT:
-			iceblock.r.SetPosition(iceblock.px+1, iceblock.py)
-			break
-		case LEFT:
-			iceblock.r.SetPosition(iceblock.px-1, iceblock.py)
-			break
-		case UP:
-			iceblock.r.SetPosition(iceblock.px, iceblock.py-1)
-			break
-		case DOWN:
-			iceblock.r.SetPosition(iceblock.px, iceblock.py+1)
-			break
+	// if the iceblock has a direction
+	if i.direction != NONE {
+		// then move it in the direction specified
+		i.time += s.TimeDelta()
+		if i.time > i.update {
+			switch i.direction {
+			case RIGHT:
+				i.r.SetPosition(i.x+1, i.y)
+				break
+			case LEFT:
+				i.r.SetPosition(i.x-1, i.y)
+				break
+			case UP:
+				i.r.SetPosition(i.x, i.y-1)
+				break
+			case DOWN:
+				i.r.SetPosition(i.x, i.y+1)
+			}
+			// updated its previous position
+			i.x, i.y = i.r.Position()
+			i.time -= i.update
 		}
-
 	}
-	iceblock.r.Draw(screen)
+	i.r.Draw(s)
+}
+
+func (i *Iceblock) Tick(event tl.Event) {
 
 }
 
-func (iceblock *Iceblock) Tick(event tl.Event) {
-
+func (i *Iceblock) Size() (int, int) {
+	return i.r.Size()
 }
 
-func (iceblock *Iceblock) Size() (int, int) {
-	return iceblock.r.Size()
+func (i *Iceblock) Position() (int, int) {
+	return i.r.Position()
 }
 
-func (iceblock *Iceblock) Position() (int, int) {
-	return iceblock.r.Position()
-}
+func (i *Iceblock) Collide(collision tl.Physical) {
+	if cib, ok := collision.(*Iceblock); ok {
+		i.g.Log("iceblock collided with an iceblock.")
 
-func (iceblock *Iceblock) Collide(collision tl.Physical) {
-	if _, ok := collision.(*Iceblock); ok {
-		// collide with another Iceblock
-		iceblock.moving = false
-		iceblock.r.SetPosition(iceblock.px, iceblock.py)
+		// if iceblock has direction
+		if i.direction != NONE {
+			// the place it next to the iceblock it has collided with
+			switch i.direction {
+			case RIGHT:
+				i.r.SetPosition(cib.x-1, cib.y)
+				break
+			case LEFT:
+				i.r.SetPosition(cib.x+1, cib.y)
+				break
+			case UP:
+				i.r.SetPosition(cib.x, cib.y+1)
+				break
+			case DOWN:
+				i.r.SetPosition(cib.x, cib.y-1)
+				break
+			}
+
+			// stop the iceblock from moving
+			i.direction = NONE
+
+			// and update its previous position
+			i.x, i.y = i.r.Position()
+
+		}
 	}
 }
