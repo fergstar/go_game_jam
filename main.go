@@ -8,7 +8,7 @@ func NewPengo(x, y int, game *tl.Game) *Pengo {
 		x: x,
 		y: y,
 		g: game,
-		d: 0,
+		d: NONE,
 	}
 }
 
@@ -19,6 +19,15 @@ func NewIceBlock(x, y int, game *tl.Game, color tl.Attr) *Iceblock {
 		x:      x,
 		y:      y,
 		update: 0.05,
+	}
+}
+
+func NewSnobee(x, y int, game *tl.Game) *Snobee {
+	return &Snobee{
+		r: tl.NewRectangle(x, y, 1, 1, tl.ColorYellow),
+		x: x,
+		y: y,
+		g: game,
 	}
 }
 
@@ -34,10 +43,15 @@ func BuildLevel(g *tl.Game, w, h, score int) {
 	for i, row := range maze {
 		for j, path := range row {
 			if path == '*' {
+				// it's an iceblock
 				l.AddEntity(NewIceBlock(i, j, g, tl.ColorBlue))
 			} else if path == 'P' {
+				// it's Pengo
 				l.AddEntity(NewPengo(i, j, g))
-			} //else if path == 'L' {
+			} else if path == 'S' {
+				// it's a Snobee
+				l.AddEntity(NewSnobee(i, j, g))
+			}
 		}
 	}
 }

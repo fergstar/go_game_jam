@@ -62,7 +62,7 @@ func generateMaze(w, h int) [][]rune {
 	point := &Point{x: 7, y: 7}
 	maze[point.x][point.y] = 'P'
 
-	//var last *Point
+	var last *Point
 	walls := adjacents(point, maze)
 	for len(walls) > 0 {
 		rand.Seed(time.Now().UnixNano())
@@ -78,10 +78,10 @@ func generateMaze(w, h int) [][]rune {
 			maze[wall.x][wall.y] = '.'
 			maze[opp.x][opp.y] = '.'
 			walls = append(walls, adjacents(opp, maze)...)
-			//last = opp
+			last = opp
 		}
 	}
-	//maze[last.x][last.y] = 'L'
+	maze[last.x][last.y] = 'S'
 	bordered := make([][]rune, len(maze)+2)
 	for r := range bordered {
 		bordered[r] = make([]rune, len(maze[0])+2)
