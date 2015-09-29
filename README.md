@@ -35,3 +35,5 @@ I'm going to finish this until I have a version of Pengo that matches, as close 
 - Additional levels
 - Maze generation like original
 - Wobbly walls
+- Intermission screens
+- Time bonuses

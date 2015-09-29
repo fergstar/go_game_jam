@@ -2,6 +2,7 @@ package main
 
 import tl "github.com/JoelOtter/termloop"
 
+// TODO move to pengo.go
 func NewPengo(x, y int, game *tl.Game) *Pengo {
 	return &Pengo{
 		r: tl.NewRectangle(x, y, 1, 1, tl.ColorRed),
@@ -12,6 +13,7 @@ func NewPengo(x, y int, game *tl.Game) *Pengo {
 	}
 }
 
+// TODO move to iceblock.go
 func NewIceBlock(x, y int, game *tl.Game, color tl.Attr) *Iceblock {
 	return &Iceblock{
 		r:      tl.NewRectangle(x, y, 1, 1, color),
@@ -22,6 +24,7 @@ func NewIceBlock(x, y int, game *tl.Game, color tl.Attr) *Iceblock {
 	}
 }
 
+// TODO move to snobee.go
 func NewSnobee(x, y int, game *tl.Game) *Snobee {
 	return &Snobee{
 		r: tl.NewRectangle(x, y, 1, 1, tl.ColorYellow),
@@ -31,6 +34,8 @@ func NewSnobee(x, y int, game *tl.Game) *Snobee {
 	}
 }
 
+// TODO need to be able to build multiple levels
+// maybe look at adding a 'R' key during debug to reload/refresh level
 func BuildLevel(g *tl.Game, w, h, score int) {
 
 	maze := generateMaze(w, h)
@@ -52,6 +57,8 @@ func BuildLevel(g *tl.Game, w, h, score int) {
 				// it's a Snobee
 				l.AddEntity(NewSnobee(i, j, g))
 			}
+			// 'R' it's a Diamond iceblock
+			// 's' it's a snobee egg iceblock
 		}
 	}
 }
@@ -59,9 +66,11 @@ func BuildLevel(g *tl.Game, w, h, score int) {
 func main() {
 
 	game := tl.NewGame()
+
+	// pengo default maze size is 13x15
 	BuildLevel(game, 13, 15, 0)
 
-	game.SetDebugOn(true)
+	game.SetDebugOn(false)
 
 	game.Start()
 

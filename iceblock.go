@@ -53,12 +53,20 @@ func (i *Iceblock) Position() (int, int) {
 }
 
 func (i *Iceblock) Collide(collision tl.Physical) {
+
+	// iceblock has collided with another iceblock
 	if cib, ok := collision.(*Iceblock); ok {
 		i.g.Log("iceblock collided with an iceblock.")
 
+		// TODO crush iceblock if its next to another iceblock
+		// we can do this by setting its start position and its
+		// end position (previous position)
+		// if the start pos equals the end pos then the iceblock
+		// hasn't moved and we can crush the iceblock.
+
 		// if iceblock has direction
 		if i.direction != NONE {
-			// the place it next to the iceblock it has collided with
+			// then place it next to the iceblock it has collided with
 			switch i.direction {
 			case RIGHT:
 				i.r.SetPosition(cib.x-1, cib.y)
@@ -81,5 +89,13 @@ func (i *Iceblock) Collide(collision tl.Physical) {
 			i.x, i.y = i.r.Position()
 
 		}
+	}
+
+	// iceblock has collided with a Snobee
+	if _, ok := collision.(*Snobee); ok {
+
+		// send the snobee moving in the same direction as iceblock
+		// we may need to collect additional snobee's as we move
+		// when it hits another iceblock or wall then crush snobee/s
 	}
 }

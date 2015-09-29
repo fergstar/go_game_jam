@@ -4,8 +4,8 @@ import tl "github.com/JoelOtter/termloop"
 
 type Pengo struct {
 	r  *tl.Rectangle
-	x  int
-	y  int
+	x  int // previous x position
+	y  int // previous y position
 	g  *tl.Game
 	d  Direction
 	ib *Iceblock
@@ -17,11 +17,19 @@ func (pengo *Pengo) Draw(screen *tl.Screen) {
 
 func (p *Pengo) Tick(event tl.Event) {
 	if event.Type == tl.EventKey {
+
+		// set previous position
 		p.x, p.y = p.r.Position()
+
+		// capture key events
 		switch event.Key {
 		case tl.KeyArrowRight:
+			// set pengo's direction he is travelling.
 			p.d = RIGHT
+			// if pengo moves we want to unassign the iceblock that he
+			// originally collided with.
 			p.ib = nil
+			// update pengo's position in the direction he is heading
 			p.r.SetPosition(p.x+1, p.y)
 			break
 		case tl.KeyArrowLeft:
@@ -39,8 +47,12 @@ func (p *Pengo) Tick(event tl.Event) {
 			p.ib = nil
 			p.r.SetPosition(p.x, p.y+1)
 			break
-		case tl.KeySpace:
+		case tl.KeySpace: // push the block
+
+			// confirm that pengo has collided with a block
 			if p.ib != nil {
+				// if pengo has then set the iceblock to
+				// travel in the direction pengo was going
 				p.ib.direction = p.d
 			}
 			break
@@ -57,9 +69,13 @@ func (p *Pengo) Position() (int, int) {
 }
 
 func (p *Pengo) Collide(collision tl.Physical) {
+
+	// check if pengo has collided with an iceblock.
 	if cib, ok := collision.(*Iceblock); ok {
 		p.g.Log("pengo collided with iceblock")
+		// assign the collided iceblock to pengo
 		p.ib = cib
+		// set pengo's poistion to previous position
 		p.r.SetPosition(p.x, p.y)
 	}
 }
