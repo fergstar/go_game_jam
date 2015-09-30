@@ -5,11 +5,15 @@ import tl "github.com/JoelOtter/termloop"
 type Iceblock struct {
 	r         *tl.Rectangle
 	g         *tl.Game
-	x         int
-	y         int
 	update    float64
 	time      float64
 	direction Direction
+	startPos  Point
+	endPos    Point
+}
+
+type Point struct {
+	x, y int
 }
 
 func (i *Iceblock) Draw(s *tl.Screen) {
@@ -21,19 +25,19 @@ func (i *Iceblock) Draw(s *tl.Screen) {
 		if i.time > i.update {
 			switch i.direction {
 			case RIGHT:
-				i.r.SetPosition(i.x+1, i.y)
+				i.r.SetPosition(i.endPos.x+1, i.endPos.y)
 				break
 			case LEFT:
-				i.r.SetPosition(i.x-1, i.y)
+				i.r.SetPosition(i.endPos.x-1, i.endPos.y)
 				break
 			case UP:
-				i.r.SetPosition(i.x, i.y-1)
+				i.r.SetPosition(i.endPos.x, i.endPos.y-1)
 				break
 			case DOWN:
-				i.r.SetPosition(i.x, i.y+1)
+				i.r.SetPosition(i.endPos.x, i.endPos.y+1)
 			}
 			// updated its previous position
-			i.x, i.y = i.r.Position()
+			i.endPos.x, i.endPos.y = i.r.Position()
 			i.time -= i.update
 		}
 	}
@@ -58,35 +62,36 @@ func (i *Iceblock) Collide(collision tl.Physical) {
 	if cib, ok := collision.(*Iceblock); ok {
 		i.g.Log("iceblock collided with an iceblock.")
 
-		// TODO crush iceblock if its next to another iceblock
-		// we can do this by setting its start position and its
-		// end position (previous position)
-		// if the start pos equals the end pos then the iceblock
-		// hasn't moved and we can crush the iceblock.
-
-		// if iceblock has direction
-		if i.direction != NONE {
+		// if collide iceblock is not moving and the moving iceblock is
+		if cib.direction == NONE && i.direction != NONE {
 			// then place it next to the iceblock it has collided with
 			switch i.direction {
 			case RIGHT:
-				i.r.SetPosition(cib.x-1, cib.y)
+				i.r.SetPosition(cib.endPos.x-1, cib.endPos.y)
 				break
 			case LEFT:
-				i.r.SetPosition(cib.x+1, cib.y)
+				i.r.SetPosition(cib.endPos.x+1, cib.endPos.y)
 				break
 			case UP:
-				i.r.SetPosition(cib.x, cib.y+1)
+				i.r.SetPosition(cib.endPos.x, cib.endPos.y+1)
 				break
 			case DOWN:
-				i.r.SetPosition(cib.x, cib.y-1)
+				i.r.SetPosition(cib.endPos.x, cib.endPos.y-1)
 				break
 			}
 
 			// stop the iceblock from moving
 			i.direction = NONE
 
-			// and update its previous position
-			i.x, i.y = i.r.Position()
+			// update its previous position
+			i.endPos.x, i.endPos.y = i.r.Position()
+
+			// if the iceblock hasn't moved than we assume that
+			// its next to another iceblock and we remove it
+			// a.k.a pengo has crushed the iceblock
+			if i.endPos.x == i.startPos.x && i.endPos.y == i.startPos.y {
+				i.g.Screen().Level().RemoveEntity(i)
+			}
 
 		}
 	}

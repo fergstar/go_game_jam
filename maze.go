@@ -8,24 +8,24 @@ import (
 // Maze generation taken from _examples/pyramid.go & modified
 // needs more work to simulate maze from Pengo
 
-type Point struct {
+type MazePoint struct {
 	x int
 	y int
-	p *Point
+	p *MazePoint
 }
 
-func (p *Point) Opposite() *Point {
+func (p *MazePoint) Opposite() *MazePoint {
 	if p.x != p.p.x {
-		return &Point{x: p.x + (p.x - p.p.x), y: p.y, p: p}
+		return &MazePoint{x: p.x + (p.x - p.p.x), y: p.y, p: p}
 	}
 	if p.y != p.p.y {
-		return &Point{x: p.x, y: p.y + (p.y - p.p.y), p: p}
+		return &MazePoint{x: p.x, y: p.y + (p.y - p.p.y), p: p}
 	}
 	return nil
 }
 
-func adjacents(point *Point, maze [][]rune) []*Point {
-	res := make([]*Point, 0)
+func adjacents(point *MazePoint, maze [][]rune) []*MazePoint {
+	res := make([]*MazePoint, 0)
 	for i := -1; i < 2; i++ {
 		for j := -1; j < 2; j++ {
 			if (i == 0 && j == 0) || (i != 0 && j != 0) {
@@ -35,7 +35,7 @@ func adjacents(point *Point, maze [][]rune) []*Point {
 				continue
 			}
 			if maze[point.x+i][point.y+j] == '*' {
-				res = append(res, &Point{point.x + i, point.y + j, point})
+				res = append(res, &MazePoint{point.x + i, point.y + j, point})
 			}
 		}
 	}
@@ -59,10 +59,10 @@ func generateMaze(w, h int) [][]rune {
 	}
 	rand.Seed(time.Now().UnixNano())
 	// Pengo always starts at 7,7
-	point := &Point{x: 7, y: 7}
+	point := &MazePoint{x: 7, y: 7}
 	maze[point.x][point.y] = 'P'
 
-	var last *Point
+	var last *MazePoint
 	walls := adjacents(point, maze)
 	for len(walls) > 0 {
 		rand.Seed(time.Now().UnixNano())

@@ -16,11 +16,18 @@ func NewPengo(x, y int, game *tl.Game) *Pengo {
 // TODO move to iceblock.go
 func NewIceBlock(x, y int, game *tl.Game, color tl.Attr) *Iceblock {
 	return &Iceblock{
-		r:      tl.NewRectangle(x, y, 1, 1, color),
-		g:      game,
-		x:      x,
-		y:      y,
-		update: 0.05,
+		r: tl.NewRectangle(x, y, 1, 1, color),
+		g: game,
+		startPos: Point{
+			x: x,
+			y: y,
+		},
+		endPos: Point{
+			x: x,
+			y: y,
+		},
+		update:    0.05,
+		direction: NONE,
 	}
 }
 
@@ -48,8 +55,15 @@ func BuildLevel(g *tl.Game, w, h, score int) {
 	for i, row := range maze {
 		for j, path := range row {
 			if path == '*' {
-				// it's an iceblock
-				l.AddEntity(NewIceBlock(i, j, g, tl.ColorBlue))
+
+				// check if the iceblock is a wall and set its color to white.
+				var blockcolor = tl.ColorBlue
+				if (i <= 1 || j <= 1) || (i >= 15 || j >= 17) {
+					blockcolor = tl.ColorWhite
+				}
+
+				l.AddEntity(NewIceBlock(i, j, g, blockcolor))
+
 			} else if path == 'P' {
 				// it's Pengo
 				l.AddEntity(NewPengo(i, j, g))
@@ -68,7 +82,7 @@ func main() {
 	game := tl.NewGame()
 
 	// pengo default maze size is 13x15
-	BuildLevel(game, 13, 15, 0)
+	BuildLevel(game, 15, 17, 0)
 
 	game.SetDebugOn(false)
 

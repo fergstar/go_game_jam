@@ -54,6 +54,8 @@ func (p *Pengo) Tick(event tl.Event) {
 				// if pengo has then set the iceblock to
 				// travel in the direction pengo was going
 				p.ib.direction = p.d
+				// set the iceblock's current position as its start position
+				p.ib.startPos.x, p.ib.startPos.y = p.ib.Position()
 			}
 			break
 		}
@@ -72,9 +74,12 @@ func (p *Pengo) Collide(collision tl.Physical) {
 
 	// check if pengo has collided with an iceblock.
 	if cib, ok := collision.(*Iceblock); ok {
-		p.g.Log("pengo collided with iceblock")
-		// assign the collided iceblock to pengo
-		p.ib = cib
+		if cib.r.Color() == tl.ColorBlue {
+
+			p.g.Log("pengo collided with iceblock")
+			// assign the collided iceblock to pengo
+			p.ib = cib
+		}
 		// set pengo's poistion to previous position
 		p.r.SetPosition(p.x, p.y)
 	}
